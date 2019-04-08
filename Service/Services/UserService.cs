@@ -26,11 +26,7 @@ namespace Service.Services
             return c;
         }
 
-        //public User GetUserById(int id)
-        //{
-        //    var c = Get(Us)
-                
-        //        }
+
         public IEnumerable<User> TeamLeader()
         {
             var c = GetMany(t => t.role == "Team Leader");
@@ -41,6 +37,8 @@ namespace Service.Services
             var c = GetMany(t => t.role == "Team Member");
             return c;
         }
+
+
     }
 
 }

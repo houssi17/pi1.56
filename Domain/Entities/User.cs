@@ -19,7 +19,7 @@ namespace Domain.Entities
 
         public string lastname { get; set; }
 
-         public string Path { get; set; }
+         public string img {get; set; }
 
         public string role { get; set; }
         public Team Team { get; set; }
@@ -57,7 +57,7 @@ namespace Domain.Entities
             // CookieAuthenticationOptions.AuthenticationType 
             var userIdentity = await manager.CreateIdentityAsync(this, DefaultAuthenticationTypes.ApplicationCookie);
             // Add custom user claims here 
-            userIdentity.AddClaim(new Claim("firstname", this.firstname)); return userIdentity;
+             return userIdentity;
             
         }
 

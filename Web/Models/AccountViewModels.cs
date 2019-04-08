@@ -91,7 +91,7 @@ namespace Web.Models
         [Phone]
         public string PhoneNumber { get; set; }
         [Required]
-        public string Path { get; set; }
+        public string img { get; set; }
 
 
     }

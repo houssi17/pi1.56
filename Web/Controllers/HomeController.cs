@@ -37,7 +37,7 @@ namespace Web.Controllers
 
             User u = new User();
             u.Id = cuser.Id;
-            u.Path = cuser.Path;
+            u.img = cuser.img;
             u.firstname = cuser.firstname;
             List<User> listuser = new List<User>();
             listuser.Add(u);
@@ -59,13 +59,13 @@ namespace Web.Controllers
             }
             else if (User.IsInRole("Team Member"))
             {
-                return RedirectToAction("");
+                return RedirectToAction("DisplayTeamLeader","Home");
             }
             else if (User.IsInRole("Admin"))
             {
 
 
-                return RedirectToAction("DisplayManager", "Home");
+                return RedirectToAction("Users", "Home");
             }
           
             return View();
@@ -104,22 +104,6 @@ namespace Web.Controllers
 
 
             }
-
-            //HttpClient Client = new HttpClient();
-            //Client.BaseAddress = new Uri("http://localhost:50354/");
-            //Client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            //HttpResponseMessage response = Client.GetAsync("GestionProjet/api/User").Result;
-            //if (response.IsSuccessStatusCode)
-            //{
-            //    ViewBag.result = response.Content.ReadAsAsync<IEnumerable<Domain.Entities.User>>().Result;
-
-            //}
-
-            //else
-            //{
-            //    ViewBag.result = "error";
-            //}
-            //return View(ViewBag.result);
            
 
             return View(us.noadmin().ToList());
@@ -152,6 +136,18 @@ namespace Web.Controllers
 
         public ActionResult Edit(int id )
         {
+            if (!Request.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            //redirect to nowhere if not admin
+            if (!(User.IsInRole("Admin")))
+            {
+                return RedirectToAction("Nowhere", "Account");
+
+
+            }
+
             User user = us.GetById(id);
             RegisterViewModel rvm = new RegisterViewModel();
             rvm.PhoneNumber = user.PhoneNumber;
@@ -170,6 +166,7 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult Edit(int id, RegisterViewModel rvm)
         {
+
             User user = us.GetById(id);
 
             user.PhoneNumber = rvm.PhoneNumber;

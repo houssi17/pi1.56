@@ -36,7 +36,7 @@
                                     <th> @Html.DisplayNameFor(model => model.UserName)</th>
                                     <th></th>
                                     <th>Role</th>
-                                    <th>Created Date</th>
+                                    <th>Phone Number</th>
                                     <th></th>
                                     <th>Action</th>
                                 </tr>
@@ -50,7 +50,7 @@
 
                                     <tr>
                                         <td class="width45">
-                                            <img src="@Url.Content(item.Path)" class="rounded-circle width35" alt="">
+                                            <img src="@Url.Content(item.img)" class="rounded-circle width35" alt="">
                                         </td>
                                         <td>
                                             <h6 class="mb-0">@Html.DisplayFor(modelItem => item.UserName)</h6>
@@ -67,8 +67,8 @@
 
 
                                         </td>
-                                        <td>24 Jun, 2015</td>
-                                        <td>CEO and Founder</td>
+                                        <td>@Html.DisplayFor(modelItem => item.PhoneNumber)</td>
+                                        <td></td>
                                         <td>
 
 

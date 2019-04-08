@@ -163,16 +163,16 @@ namespace Web.Controllers
         public ActionResult Register()
         {
 
-            //// tshouf ken mouch connecté redirection lil login
-            //if (!Request.IsAuthenticated)
-            //{
-            //    return RedirectToAction("Login");
-            //}
-            ////ken moush connecté redirection il  Nowhere
-            //if (!User.IsInRole("Admin"))
-            //{
-            //   return RedirectToAction("Nowhere");
-            //}
+           // tshouf ken mouch connecté redirection lil login
+            if (!Request.IsAuthenticated)
+            {
+                return RedirectToAction("Login");
+            }
+           // ken moush connecté redirection il Nowhere
+            if (!User.IsInRole("Admin"))
+            {
+                return RedirectToAction("Nowhere");
+            }
 
             return View();
 
@@ -189,7 +189,7 @@ namespace Web.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Register(RegisterViewModel model , System.Web.HttpPostedFileBase file)
+        public async Task<ActionResult> Register(RegisterViewModel model , System.Web.HttpPostedFileBase img)
         {
             
            
@@ -197,32 +197,66 @@ namespace Web.Controllers
                 if (ModelState.IsValid)
             {
 
-                    var fileName = Path.GetFileName(file.FileName);
-                    var path = Path.Combine(Server.MapPath("~/Content/Documents/"), fileName);
-
-                    file.SaveAs(path);
-                    String Path1 = "~/Content/Documents/" + fileName;
-                    ViewBag.Message = "File Uploaded Successfully!!";
-              
 
 
-                var user = new User { UserName = model.Email, Email = model.Email, Path=Path1 ,role= model.role, firstname = model.firstname, lastname = model.lastname, PhoneNumber = model.PhoneNumber };
-                var result = await UserManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
+                try
                 {
 
+                    if (img.ContentLength > 0)
+                    {
+                        var fileName = Path.GetFileName(img.FileName);
+                        var path = Path.Combine(Server.MapPath("~/Content/Documents/"),fileName);
 
-                    await this.UserManager.AddToRoleAsync(user.Id, model.role);
-                    //Ends Here
-                    // Pour plus d'informations sur l'activation de la confirmation de compte et de la réinitialisation de mot de passe, visitez https://go.microsoft.com/fwlink/?LinkID=320771
-                    // Envoyer un message électronique avec ce lien
-                    string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                    var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                    await UserManager.SendEmailAsync(user.Id, "Confirmez votre compte", "Confirmez votre compte en cliquant <a href=\"" + callbackUrl + "\">ici</a>");
+                        img.SaveAs(path);
+                        String Path1 = "~/Content/Documents/"+fileName;
+                        ViewBag.Message = "File Uploaded Successfully!!";
+                        var user = new User { UserName = model.Email, Email = model.Email, img=Path1, role = model.role, firstname = model.firstname, lastname = model.lastname, PhoneNumber = model.PhoneNumber };
+                        var result = await UserManager.CreateAsync(user, model.Password);
+                        if (result.Succeeded)
+                        {
 
-                    return RedirectToAction("Users", "Home");
+
+                            await this.UserManager.AddToRoleAsync(user.Id, model.role);
+                            //Ends Here
+                            // Pour plus d'informations sur l'activation de la confirmation de compte et de la réinitialisation de mot de passe, visitez https://go.microsoft.com/fwlink/?LinkID=320771
+                            // Envoyer un message électronique avec ce lien
+                            string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                            var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+                            await UserManager.SendEmailAsync(user.Id, "Confirmez votre compte", "Confirmez votre compte en cliquant <a href=\"" + callbackUrl + "\">ici</a>");
+
+                            return RedirectToAction("Users", "Home");
+                        }
+                        AddErrors(result);
+
+                    }
+                } catch {
+
+                    ViewBag.Message = "File upload failed!!";
+                    String Path1 = "~/Content/Documents/index.png";
+                    var user = new User { UserName = model.Email, Email = model.Email, img = Path1, role = model.role, firstname = model.firstname, lastname = model.lastname, PhoneNumber = model.PhoneNumber };
+                    var result = await UserManager.CreateAsync(user, model.Password);
+                    if (result.Succeeded)
+                    {
+
+
+                        await this.UserManager.AddToRoleAsync(user.Id, model.role);
+                        //Ends Here
+                        // Pour plus d'informations sur l'activation de la confirmation de compte et de la réinitialisation de mot de passe, visitez https://go.microsoft.com/fwlink/?LinkID=320771
+                        // Envoyer un message électronique avec ce lien
+                        string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                        var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+                        await UserManager.SendEmailAsync(user.Id, "Confirmez votre compte", "Confirmez votre compte en cliquant <a href=\"" + callbackUrl + "\">ici</a>");
+
+                        return RedirectToAction("Users", "Home");
+                    }
+                    AddErrors(result);
+
+
                 }
-                AddErrors(result);
+
+
+
+
             }
 
             // Si nous sommes arrivés là, un échec s’est produit. Réafficher le formulaire
